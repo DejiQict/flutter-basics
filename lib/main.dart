@@ -1,13 +1,8 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/user.dart';
 import 'package:flutter_application_1/view_notes.dart';
 
 void main() {
   runApp(const MyApp());
-  MySingleton singleton = MySingleton();
-  singleton.addName("Deji");
 }
 
 
@@ -21,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo', //Title in top bar
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 16, 158, 71)),
+        scaffoldBackgroundColor: const Color.fromARGB(0, 252, 255, 215),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'), //For initial route
@@ -50,29 +45,14 @@ class _MyHomePageState extends State<MyHomePage> {
    @override
   void initState() {// For fetching data (api, database calls)
     super.initState();
-    Map<int, List> notes = HashMap();
-
-    notes = {
-      1: ["groceries", "Tomatoes, Rice, Peas, Beans", "https://media.istockphoto.com/id/639201180/nl/vector/shopping-cart-icon.jpg?s=612x612&w=0&k=20&c=i9Ql8NjGC94vMvQuMmOenbanZDOC0QJb4R8S_VhOoz4="],
-      2: ["office Supplies", "Pens, Pencils, Staplers", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmIj_XV0gXQnqvgVy0NXp-iWEbaiLCwLLNZw&s"]
-      };
-
-    print(notes[1]?[0]);
+    
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: ViewPage(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    return const Scaffold( // Remove Const
+      
+      body: ViewPage(),// This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

@@ -15,4 +15,8 @@ class MySingleton {
     name+= "$input's Notes";
   }
 
+  String printName() {
+    return name;
+  }
+
 }

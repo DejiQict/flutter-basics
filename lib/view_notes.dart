@@ -1,6 +1,8 @@
 import 'dart:collection';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/user.dart';
 
 class ViewPage extends StatefulWidget {
   const ViewPage({super.key});
@@ -35,51 +37,69 @@ class _ViewPageState extends State<ViewPage> {
       2: ["office Supplies", "Pens, Pencils, Staplers", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmIj_XV0gXQnqvgVy0NXp-iWEbaiLCwLLNZw&s"]
       };
 
-    print(notes[1]?[0]);
+    if (kDebugMode) { //Only prints in the debug mode not production
+      print(notes[1]?[0]);
+    }
+
+    
+   
   }
 
   @override
   Widget build(BuildContext context) {
+     MySingleton singleton = MySingleton(); // can go in initstate, build and 
+    singleton.addName("Deji");
+    print(singleton.printName());
+    
     return Scaffold(
       
-      // body: Center(
-      //   // Center is a layout widget. It takes a single child and positions it
-      //   // in the middle of the parent.
-      //   child: Column(
-          
-      //     mainAxisAlignment: MainAxisAlignment.center,
-      //     children: <Widget>[
-      //       const Text(
-      //         'You have pushed the button this many times:',
-      //       ),
-      //       Text(
-      //         '$_counter',
-      //         style: Theme.of(context).textTheme.headlineMedium,
-      //       ),
-      //     ],
-      //   ),
-      // ),
-      body: GridView.count(
-      // Create a grid with 2 columns. If you change the scrollDirection to
-      // horizontal, this produces 2 rows.
-      crossAxisCount: 2,
-      // Generate 100 widgets that display their index in the List.
-      children: List.generate(2, (index) {
-        return Center(
-          child: Text(
-            'Item $index',
-            style: Theme.of(context).textTheme.headlineSmall,
+      body: Column(
+        children: [
+          Container( // Row for header
+            color:  Color(0xFFE3D081),
+            padding: EdgeInsets.only(left: 10,right: 10),
+            child: Row(
+              
+              children: [
+              
+              Text(
+                singleton.printName(),
+                style: const TextStyle(fontSize: 30.00, color: Color.fromARGB(255, 5, 5, 5), fontStyle: FontStyle.italic),
+            
+              ),
+              Spacer(),
+              ElevatedButton(onPressed: onPressed, child: Text("Create Note"))
+            ],
+            ),
+          ), 
+          SizedBox(// Make this generate for each item of the remaining page. Also look at how to define page colour
+            child: Container(
+              color:  Color.fromARGB(255, 254, 244, 207),
+              child: Row( // Row for notes content, try generative feature based on each article in notes
+                
+                children: [
+                
+                Text(
+                  singleton.printName(),
+                  style: TextStyle(fontSize: 30.00, color: Color.fromARGB(25, 30, 24, 23)),
+              
+                ),
+                Spacer(),
+                ElevatedButton(onPressed: onPressed, child: Text("Create Note")),
+                Spacer(),
+                ElevatedButton(onPressed: onPressed, child: Text("Create Note"))
+              ],
+              ),
+            ),
           ),
-        );
-      }),
+
+        ],
+
       ),
       
-
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), 
     );
+  }
+
+  void onPressed() {
   }
 }
