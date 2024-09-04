@@ -148,7 +148,9 @@ class _ViewPageState extends State<ViewPage> {
                               ),
                               onPressed: onPressed,
                               child: const Text('Edit Note')),
-                          const Spacer(),
+                          const SizedBox(
+                            width: 5.0,
+                          ),
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
@@ -178,7 +180,8 @@ class _ViewPageState extends State<ViewPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Delete!'),
-          titleTextStyle: TextStyle(color: Color.fromARGB(255, 227, 134, 129)),
+          titleTextStyle:
+              const TextStyle(color: Color.fromARGB(255, 227, 134, 129)),
           content: const Text(
             'Are you sure?\n',
           ),
