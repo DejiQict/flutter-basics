@@ -1,8 +1,10 @@
+// ignore_for_file: use_colored_box
+
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/user.dart';
+import 'user.dart';
 
 class ViewPage extends StatefulWidget {
   const ViewPage({super.key});
@@ -13,8 +15,6 @@ class ViewPage extends StatefulWidget {
 
 class _ViewPageState extends State<ViewPage> {
   int _counter = 0;
-  
-  
 
   void _incrementCounter() {
     setState(() {
@@ -27,79 +27,147 @@ class _ViewPageState extends State<ViewPage> {
     });
   }
 
+  MySingleton singleton = MySingleton();
+  Map<int, List<String?>> notes = <int, List<String?>>{
+    1: <String?>[
+      'groceries',
+      'Tomatoes, Rice, Peas, Beans',
+      'https://media.istockphoto.com/id/639201180/nl/vector/shopping-cart-icon.jpg?s=612x612&w=0&k=20&c=i9Ql8NjGC94vMvQuMmOenbanZDOC0QJb4R8S_VhOoz4='
+    ],
+    2: <String?>[
+      'office Supplies',
+      'Pens, Pencils, Staplers',
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmIj_XV0gXQnqvgVy0NXp-iWEbaiLCwLLNZw&s'
+    ]
+  };
+
   @override
-  void initState() {// For fetching data (api, database calls)
+  void initState() {
+    // For fetching data (api, database calls)
     super.initState();
-    Map<int, List> notes = HashMap();
 
-    notes = {
-      1: ["groceries", "Tomatoes, Rice, Peas, Beans", "https://media.istockphoto.com/id/639201180/nl/vector/shopping-cart-icon.jpg?s=612x612&w=0&k=20&c=i9Ql8NjGC94vMvQuMmOenbanZDOC0QJb4R8S_VhOoz4="],
-      2: ["office Supplies", "Pens, Pencils, Staplers", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmIj_XV0gXQnqvgVy0NXp-iWEbaiLCwLLNZw&s"]
-      };
-
-    if (kDebugMode) { //Only prints in the debug mode not production
+    if (kDebugMode) {
+      //Only prints in the debug mode not production
       print(notes[1]?[0]);
     }
+  }
 
-    
-   
+  List<String?> getTitles() {
+    List<String?> titles = <String?>[];
+    notes.forEach((int key, List<String?> value) {
+      titles.add(value[0]);
+    });
+    return titles;
   }
 
   @override
   Widget build(BuildContext context) {
-     MySingleton singleton = MySingleton(); // can go in initstate, build and 
-    singleton.addName("Deji");
-    print(singleton.printName());
-    
+    // can go in initstate, build and
+    singleton.addName('Deji'); //Use this to fill the text field
+    if (kDebugMode) {
+      print(singleton.printName());
+    }
+
+    List<String?> titles = getTitles();
+
     return Scaffold(
-      
       body: Column(
-        children: [
-          Container( // Row for header
-            color:  Color(0xFFE3D081),
-            padding: EdgeInsets.only(left: 10,right: 10),
+        children: <Widget>[
+          Container(
+            // Row for header
+            color: const Color(0xFFE3D081),
+            padding: const EdgeInsets.only(left: 10, right: 10),
             child: Row(
-              
-              children: [
-              
-              Text(
-                singleton.printName(),
-                style: const TextStyle(fontSize: 30.00, color: Color.fromARGB(255, 5, 5, 5), fontStyle: FontStyle.italic),
-            
-              ),
-              Spacer(),
-              ElevatedButton(onPressed: onPressed, child: Text("Create Note"))
-            ],
-            ),
-          ), 
-          SizedBox(// Make this generate for each item of the remaining page. Also look at how to define page colour
-            child: Container(
-              color:  Color.fromARGB(255, 254, 244, 207),
-              child: Row( // Row for notes content, try generative feature based on each article in notes
-                
-                children: [
-                
+              children: <Widget>[
                 Text(
                   singleton.printName(),
-                  style: TextStyle(fontSize: 30.00, color: Color.fromARGB(25, 30, 24, 23)),
-              
+                  style: const TextStyle(
+                      fontSize: 30.00,
+                      color: Color.fromARGB(255, 5, 5, 5),
+                      fontStyle: FontStyle.italic),
                 ),
-                Spacer(),
-                ElevatedButton(onPressed: onPressed, child: Text("Create Note")),
-                Spacer(),
-                ElevatedButton(onPressed: onPressed, child: Text("Create Note"))
+                const Spacer(),
+                ElevatedButton(
+                    onPressed: onPressed, child: const Text('Create Note'))
               ],
+            ),
+          ),
+          SizedBox(
+            // Make this generate for each item of the remaining page. Also look at how to define page colour
+            child: Container(
+              decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 254, 244, 207),
+                  border: Border(
+                      bottom:
+                          BorderSide(color: Color(0xFFE3D081), width: 3.0))),
+              child: Row(
+                // Row for notes content, try generative feature based on each article in notes
+
+                children: <Widget>[
+                  Text(
+                    titles[0]!,
+                    style: const TextStyle(
+                        fontSize: 30.00, color: Color.fromARGB(25, 30, 24, 23)),
+                  ),
+                  const Spacer(),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color.fromARGB(255, 255, 233, 90),
+                      ),
+                      onPressed: onPressed,
+                      child: const Text('Edit Note')),
+                  const Spacer(),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 255, 90, 90),
+                      ),
+                      onPressed: onPressed,
+                      child: const Text('Delete Note')),
+                ],
               ),
             ),
           ),
+          SizedBox(
+            // Make this generate for each item of the remaining page. Also look at how to define page colour
+            child: Container(
+              decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 254, 244, 207),
+                  border: Border(
+                      bottom:
+                          BorderSide(color: Color(0xFFE3D081), width: 3.0))),
+              child: Row(
+                // Row for notes content, try generative feature based on each article in notes
 
+                children: <Widget>[
+                  Text(
+                    titles[1]!,
+                    style: const TextStyle(
+                        fontSize: 30.00, color: Color.fromARGB(25, 30, 24, 23)),
+                  ),
+                  const Spacer(),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color.fromARGB(255, 255, 233, 90),
+                      ),
+                      onPressed: onPressed,
+                      child: const Text('Edit Note')),
+                  const Spacer(),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 255, 90, 90),
+                      ),
+                      onPressed: onPressed,
+                      child: const Text('Delete Note')),
+                ],
+              ),
+            ),
+          ),
         ],
-
       ),
-      
     );
   }
 
-  void onPressed() {
-  }
+  void onPressed() {}
 }
