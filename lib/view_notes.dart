@@ -1,7 +1,5 @@
 // ignore_for_file: use_colored_box
 
-import 'dart:collection';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'user.dart';
@@ -16,13 +14,41 @@ class ViewPage extends StatefulWidget {
 class _ViewPageState extends State<ViewPage> {
   int _counter = 0;
 
+  Map<int, List<String?>> getNotes() {
+    return notes;
+  }
+
+  List<String?> getTitles() {
+    List<String?> titles = <String?>[];
+    notes.forEach((int key, List<String?> value) {
+      titles.add(value[0]);
+    });
+    return titles;
+  }
+
+  void createNote(String title, String list, String image) {
+    notes[notes.length + 1] = <String?>[title, list, image];
+  }
+
+  void deleteNote(int key) {
+    notes.remove(key);
+  }
+
+  void editNote(int key, String title, String note, String image) {
+    notes[key] = <String>[title, note, image];
+  }
+
+  (String?, String?, String?) getDetails(int key) {
+    //fix to call once and assign to local variables in function
+    String? title = getNotes()[key]?[0];
+    String? note = getNotes()[key]?[1];
+    String? image = getNotes()[key]?[2];
+
+    return (title, note, image);
+  }
+
   void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       _counter++;
     });
   }
@@ -48,36 +74,8 @@ class _ViewPageState extends State<ViewPage> {
     singleton.addName('Deji');
     if (kDebugMode) {
       //Only prints in the debug mode not production
-      print(notes[1]?[0]);
+      print(notes.length);
     }
-  }
-
-  Map<int, List<String?>> getNotes() {
-    return notes;
-  }
-
-  List<String?> getTitles() {
-    List<String?> titles = <String?>[];
-    notes.forEach((int key, List<String?> value) {
-      titles.add(value[0]);
-    });
-    return titles;
-  }
-
-  void createNote(String title, String list, String image) {
-    notes[notes.length + 1] = [image, list, image];
-  }
-
-  void deleteNote(int key) {
-    notes.remove(key);
-  }
-
-  (String?, String?, String?) getDetails(int key) {
-    String? title = getNotes()[key]?[0];
-    String? list = getNotes()[key]?[1];
-    String? image = getNotes()[key]?[2];
-
-    return (title, list, image);
   }
 
   @override
@@ -99,9 +97,9 @@ class _ViewPageState extends State<ViewPage> {
                 Text(
                   singleton.printName(),
                   style: const TextStyle(
-                      fontSize: 30.00,
-                      color: Color.fromARGB(255, 5, 5, 5),
-                      fontStyle: FontStyle.italic),
+                    fontSize: 30.00,
+                    color: Color.fromARGB(255, 5, 5, 5),
+                  ),
                 ),
                 const Spacer(),
                 ElevatedButton(
@@ -109,7 +107,7 @@ class _ViewPageState extends State<ViewPage> {
                       textStyle: const TextStyle(color: Colors.black),
                       backgroundColor: const Color.fromARGB(255, 90, 255, 101),
                     ),
-                    onPressed: onPressed,
+                    onPressed: () => createPressed(context),
                     child: const Text('Create Note')),
               ],
             ),
@@ -120,7 +118,7 @@ class _ViewPageState extends State<ViewPage> {
               // makes all items show on page due infinite page size
               child: ListView(
                 children: notes.keys.map((int key) {
-                  String? title = notes[key]?[0];
+                  final String? title = notes[key]?[0];
                   return SizedBox(
                     // Make this generate for each item of the remaining page. Also look at how to define page colour
                     child: Container(
@@ -138,15 +136,17 @@ class _ViewPageState extends State<ViewPage> {
                             title!,
                             style: const TextStyle(
                                 fontSize: 30.00,
-                                color: Color.fromARGB(25, 30, 24, 23)),
+                                color: Color.fromARGB(25, 30, 24, 23),
+                                fontStyle: FontStyle.italic,
+                                fontFamily: ''),
                           ),
-                          const Spacer(),
+                          Spacer(),
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
                                     const Color.fromARGB(255, 255, 233, 90),
                               ),
-                              onPressed: onPressed,
+                              onPressed: () => editPressed(context, key),
                               child: const Text('Edit Note')),
                           const SizedBox(
                             width: 5.0,
@@ -172,7 +172,9 @@ class _ViewPageState extends State<ViewPage> {
   }
 
   void onPressed() {}
-  void CreatePressed() {}
+  final TextEditingController title = TextEditingController();
+  final TextEditingController note = TextEditingController();
+  final TextEditingController image = TextEditingController();
 
   Future<void> deletePressed(BuildContext context, int key) {
     return showDialog<void>(
@@ -206,6 +208,118 @@ class _ViewPageState extends State<ViewPage> {
                   deleteNote(key);
                 });
                 print(notes);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> createPressed(BuildContext context) async {
+    final TextEditingController title = TextEditingController();
+    final TextEditingController note = TextEditingController();
+    final TextEditingController image = TextEditingController();
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFFE3D081),
+          title: const Text('Create note'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                const Text('Title'),
+                TextField(
+                  controller: title,
+                ),
+                const Text('Note'),
+                TextField(
+                  controller: note,
+                ),
+                const Text('Image'),
+                TextField(controller: image),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            // Add validation to make sure all fields are filled maybe if not, the item is not created. if title is filled, create the note regardless
+            TextButton(
+                child: const Text('Add'),
+                onPressed: () {
+                  setState(() {
+                    // Important to refresh UI after action
+                    if (title.text != '') {
+                      // make sure that topic is filled else don't create it
+                      createNote(title.text, note.text, image.text);
+                      Navigator.of(context).pop();
+                    }
+                  });
+                }),
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> editPressed(BuildContext context, int key) async {
+    // call once
+    title.text = getDetails(key).$1!; // text vs value
+    note.text = getDetails(key).$2!;
+    image.text = getDetails(key).$3!;
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFFE3D081),
+          title: const Text('Create note'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                const Text('Title'),
+                TextField(
+                  controller: title,
+                ),
+                const Text('Note'),
+                TextField(
+                  //make the textfield keep expanding with more texts for multiline
+                  controller: note,
+                  // keyboardType: TextInputType.multiline,
+                  // maxLines: null,
+                  // minLines: 4,
+                ),
+                const Text('Image'),
+                TextField(controller: image),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            // Account for list overflow
+            TextButton(
+                child: const Text('Edit'),
+                onPressed: () {
+                  setState(() {
+                    // Important to refresh UI after action
+                    if (title.text != '') {
+                      // make sure that topic is filled else don't create it
+                      editNote(key, title.text, note.text, image.text);
+                      Navigator.of(context).pop();
+                    }
+                  });
+                }),
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
                 Navigator.of(context).pop();
               },
             ),

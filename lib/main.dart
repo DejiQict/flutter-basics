@@ -52,7 +52,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return const Scaffold(
       // Remove Const
-
       body:
           ViewPage(), // This trailing comma makes auto-formatting nicer for build methods.
     );
