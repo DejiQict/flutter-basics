@@ -2,6 +2,8 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'show_note.dart';
 import 'user.dart';
 
 class ViewPage extends StatefulWidget {
@@ -45,6 +47,15 @@ class _ViewPageState extends State<ViewPage> {
     String? image = getNotes()[key]?[2];
 
     return (title, note, image);
+  }
+
+  List<String?> getDetail(int key) {
+    //fix to call once and assign to local variables in function
+    String? title = getNotes()[key]?[0];
+    String? note = getNotes()[key]?[1];
+    String? image = getNotes()[key]?[2];
+
+    return <String?>[title, note, image];
   }
 
   void _incrementCounter() {
@@ -97,6 +108,7 @@ class _ViewPageState extends State<ViewPage> {
                 Text(
                   singleton.printName(),
                   style: const TextStyle(
+                    fontStyle: FontStyle.italic,
                     fontSize: 30.00,
                     color: Color.fromARGB(255, 5, 5, 5),
                   ),
@@ -118,7 +130,6 @@ class _ViewPageState extends State<ViewPage> {
               // makes all items show on page due infinite page size
               child: ListView(
                 children: notes.keys.map((int key) {
-                  final String? title = notes[key]?[0];
                   return SizedBox(
                     // Make this generate for each item of the remaining page. Also look at how to define page colour
                     child: Container(
@@ -132,13 +143,36 @@ class _ViewPageState extends State<ViewPage> {
                         // Row for notes content, try generative feature based on each article in notes
 
                         children: <Widget>[
-                          Text(
-                            title!,
-                            style: const TextStyle(
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                              shadowColor: Colors.transparent,
+                              textStyle: const TextStyle(
                                 fontSize: 30.00,
                                 color: Color.fromARGB(25, 30, 24, 23),
-                                fontStyle: FontStyle.italic,
-                                fontFamily: ''),
+                              ),
+                              backgroundColor:
+                                  const Color.fromARGB(255, 254, 244, 207),
+                            ),
+                            onPressed: () {
+                              final details = getDetails(key);
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ShowNote(
+                                    title: details.$1, // Title
+                                    note: details.$2, // Note content
+                                    image: details.$3, // Image URL
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Text(
+                                style: GoogleFonts.getFont('Caveat Brush'),
+                                notes[key]?[0] ?? 'Unnamed Note'),
                           ),
                           Spacer(),
                           ElevatedButton(
@@ -175,6 +209,56 @@ class _ViewPageState extends State<ViewPage> {
   final TextEditingController title = TextEditingController();
   final TextEditingController note = TextEditingController();
   final TextEditingController image = TextEditingController();
+
+  Future<void> showPressed(BuildContext context, int key) async {
+    // call once
+    title.text = getDetails(key).$1!; // text vs value
+    note.text = getDetails(key).$2!;
+    image.text = getDetails(key).$3!;
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFFE3D081),
+          title: Text(title.text),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Image.network(image.text),
+                const SizedBox(
+                  height: 2.0,
+                ),
+                Text(note.text),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            // Account for list overflow
+            TextButton(
+                child: const Text('Edit'),
+                onPressed: () {
+                  setState(() {
+                    // Important to refresh UI after action
+                    if (title.text != '') {
+                      // make sure that topic is filled else don't create it
+                      editNote(key, title.text, note.text, image.text);
+                      Navigator.of(context).pop();
+                    }
+                  });
+                }),
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   Future<void> deletePressed(BuildContext context, int key) {
     return showDialog<void>(
